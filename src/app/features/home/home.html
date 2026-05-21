@@ -1,0 +1,265 @@
+<!-- ══════════════════════════ HERO ══════════════════════════ -->
+<section class="hero">
+  <app-navbar />
+
+  <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
+  <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
+
+  <div class="hero-lines" aria-hidden="true">
+    <span class="hero-line"></span>
+    <span class="hero-line"></span>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="hero-badge__dot"></span>
+      <span>Salón Premium · Barranquilla, Colombia</span>
+    </div>
+
+    <h1 class="hero-title">
+      <span class="line">Donde la Belleza</span>
+      <span class="line line--gold">Se Convierte</span>
+      <span class="line">en Arte</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      Experiencias de belleza de alta gama diseñadas para realzar tu esencia.<br class="br-desktop">
+      Tu transformación comienza aquí.
+    </p>
+
+    <div class="hero-actions">
+      <a [href]="agendaproUrl" target="_blank" rel="noopener" class="btn btn--primary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+        Agendar Cita
+      </a>
+      <a routerLink="/servicios" class="btn btn--outline">
+        Ver Servicios
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat__value">500+</span>
+        <span class="hero-stat__label">Clientes Felices</span>
+      </div>
+      <div class="hero-stat__sep"></div>
+      <div class="hero-stat">
+        <span class="hero-stat__value">5★</span>
+        <span class="hero-stat__label">Calificación</span>
+      </div>
+      <div class="hero-stat__sep"></div>
+      <div class="hero-stat">
+        <span class="hero-stat__value">8+</span>
+        <span class="hero-stat__label">Años de Experiencia</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll" aria-hidden="true">
+    <span class="hero-scroll__label">Descubre más</span>
+    <span class="hero-scroll__line"></span>
+  </div>
+</section>
+
+<!-- ══════════════════════════ SERVICES ══════════════════════════ -->
+<section class="section services-section" id="servicios">
+  <div class="section__container">
+
+    <div class="section__header">
+      <span class="section__eyebrow">Nuestros Servicios</span>
+      <h2 class="section__title">Arte en Cada Detalle</h2>
+      <p class="section__subtitle">Cada servicio está diseñado para brindarte una experiencia de lujo única.</p>
+    </div>
+
+    <div class="services-grid">
+      @for (s of services(); track s.id) {
+        <article class="service-card">
+          <div class="service-card__top">
+            <span class="service-card__category">{{ categoryLabel(s.category!) }}</span>
+            <div class="service-card__icon" aria-hidden="true">✦</div>
+          </div>
+          <h3 class="service-card__name">{{ s.name }}</h3>
+          @if (s.description) {
+            <p class="service-card__desc">{{ s.description }}</p>
+          }
+          <div class="service-card__footer">
+            <span class="service-card__price">{{ formatPrice(s.price_min!, s.price_max) }}</span>
+            <a [href]="agendaproUrl" target="_blank" rel="noopener" class="service-card__cta">
+              Reservar
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </article>
+      }
+    </div>
+
+    <div class="section__action">
+      <a routerLink="/servicios" class="btn btn--outline-gold">
+        Ver todos los servicios
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════ GALLERY TEASER ══════════════════════════ -->
+<section class="section gallery-section" id="galeria">
+  <div class="section__container">
+
+    <div class="section__header">
+      <span class="section__eyebrow">Galería</span>
+      <h2 class="section__title">Nuestro Trabajo Habla</h2>
+      <p class="section__subtitle">Transformaciones reales. Resultados premium.</p>
+    </div>
+
+    @if (gallery().length > 0) {
+      <div class="gallery-grid">
+        @for (item of gallery(); track item.id) {
+          <a routerLink="/galeria" class="gallery-placeholder gallery-placeholder--img">
+            <img [src]="item.image_url" [alt]="item.alt_text ?? 'Queen Esthetic JBV'" loading="lazy" decoding="async" />
+          </a>
+        }
+      </div>
+    } @else {
+      <div class="gallery-grid">
+        @for (item of [1,2,3,4,5,6]; track item) {
+          <div class="gallery-placeholder">
+            <div class="gallery-placeholder__inner">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(212,95,122,0.3)" stroke-width="1.5" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <path d="M21 15l-5-5L5 21"/>
+              </svg>
+              <span>Foto próximamente</span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="section__action">
+      <a routerLink="/galeria" class="btn btn--outline-gold">
+        Ver galería completa
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════ TESTIMONIALS ══════════════════════════ -->
+<section class="section testimonials-section">
+  <div class="section__container">
+
+    <div class="section__header">
+      <span class="section__eyebrow">Testimonios</span>
+      <h2 class="section__title">Lo Que Dicen Nuestras Clientas</h2>
+    </div>
+
+    <div class="testimonials-grid">
+      @for (t of testimonials(); track t.id) {
+        <article class="testimonial-card">
+          <div class="testimonial-card__stars" aria-label="{{ t.rating }} estrellas">
+            @for (star of stars(t.rating!); track $index) {
+              <span class="star">★</span>
+            }
+          </div>
+          @if (t.comment) {
+            <p class="testimonial-card__comment">"{{ t.comment }}"</p>
+          }
+          <div class="testimonial-card__author">
+            <div class="testimonial-card__avatar" aria-hidden="true">
+              {{ t.client_name!.charAt(0) }}
+            </div>
+            <div>
+              <p class="testimonial-card__name">{{ t.client_name }}</p>
+              @if (t.service_name) {
+                <p class="testimonial-card__service">{{ t.service_name }}</p>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════ CTA ══════════════════════════ -->
+<section class="cta-section">
+  <div class="cta-section__orb" aria-hidden="true"></div>
+  <div class="cta-section__content">
+    <span class="section__eyebrow" style="color: rgba(201,169,110,0.7)">¿Lista para tu transformación?</span>
+    <h2 class="cta-section__title">Agenda tu cita hoy</h2>
+    <p class="cta-section__subtitle">
+      Reserva en línea en segundos o escríbenos por WhatsApp.<br>
+      Estamos en Barranquilla, Colombia.
+    </p>
+    <div class="cta-section__actions">
+      <a [href]="agendaproUrl" target="_blank" rel="noopener" class="btn btn--primary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M8 2v3M16 2v3M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+        </svg>
+        Reservar en línea
+      </a>
+      <a [href]="whatsappUrl" target="_blank" rel="noopener" class="btn btn--outline">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+        WhatsApp
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ FOOTER ══════════════════════════ -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <span class="footer__logo-mark">QE</span>
+      <div>
+        <p class="footer__logo-name">Queen Esthetic JBV</p>
+        <p class="footer__logo-sub">Barranquilla, Colombia</p>
+      </div>
+    </div>
+
+    <nav class="footer__links" aria-label="Footer navigation">
+      <a routerLink="/">Inicio</a>
+      <a routerLink="/servicios">Servicios</a>
+      <a routerLink="/galeria">Galería</a>
+      <a [href]="agendaproUrl" target="_blank" rel="noopener">Agendar</a>
+    </nav>
+
+    <div class="footer__social">
+      <a href="https://www.instagram.com/queenestheticjbv/" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="2" width="20" height="20" rx="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+        </svg>
+      </a>
+      <a [href]="whatsappUrl" target="_blank" rel="noopener" aria-label="WhatsApp">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <p>&copy; {{ year }} Queen Esthetic JBV. Todos los derechos reservados.</p>
+    <a routerLink="/admin" class="footer__admin-link" aria-label="Admin">&#9679;</a>
+  </div>
+</footer>

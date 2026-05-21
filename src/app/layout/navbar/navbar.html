@@ -1,0 +1,48 @@
+<nav class="navbar" [class.navbar--scrolled]="isScrolled()">
+  <div class="navbar__inner">
+
+    <a routerLink="/" class="navbar__logo" (click)="closeMenu()">
+      <img src="/logo-queen-esthetic.jpg" alt="Queen Esthetic JBV" class="navbar__logo-img" />
+      <span class="navbar__logo-text">
+        <span class="navbar__logo-name">Queen Esthetic</span>
+        <span class="navbar__logo-sub">Donde la reina eres tú</span>
+      </span>
+    </a>
+
+    <ul class="navbar__links">
+      <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Inicio</a></li>
+      <li><a routerLink="/servicios" routerLinkActive="active">Servicios</a></li>
+      <li><a routerLink="/galeria" routerLinkActive="active">Galería</a></li>
+      <li>
+        <a routerLink="/reservar" class="navbar__cta">Agendar Cita</a>
+      </li>
+    </ul>
+
+    <button
+      class="navbar__burger"
+      [class.navbar__burger--open]="isMenuOpen()"
+      (click)="toggleMenu()"
+      aria-label="Toggle menu"
+    >
+      <span></span><span></span><span></span>
+    </button>
+
+  </div>
+
+  <div class="navbar__mobile" [class.navbar__mobile--open]="isMenuOpen()">
+    <ul>
+      <li><a routerLink="/" (click)="closeMenu()">Inicio</a></li>
+      <li><a routerLink="/servicios" (click)="closeMenu()">Servicios</a></li>
+      <li><a routerLink="/galeria" (click)="closeMenu()">Galería</a></li>
+      <li><a routerLink="/reservar" (click)="closeMenu()">Reservar</a></li>
+      <li>
+        <a
+          href="https://wa.me/573504132509?text=Hola,%20quiero%20agendar%20una%20cita"
+          target="_blank" rel="noopener"
+          class="navbar__mobile-cta"
+          (click)="closeMenu()"
+        >WhatsApp</a>
+      </li>
+    </ul>
+  </div>
+</nav>

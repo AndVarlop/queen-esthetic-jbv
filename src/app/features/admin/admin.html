@@ -1,0 +1,336 @@
+@if (!isAuth()) {
+  <!-- LOGIN -->
+  <div class="admin-login">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="/logo-queen-esthetic.jpg" alt="Queen Esthetic" />
+      </div>
+      <h1 class="login-title">Admin Panel</h1>
+      <p class="login-sub">Queen Esthetic JBV</p>
+
+      <form class="login-form" (ngSubmit)="login()">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="admin&#64;queenesthetic.com"
+            [ngModel]="email()" (ngModelChange)="email.set($event)" name="email" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input type="password" class="form-input" placeholder="••••••••"
+            [ngModel]="password()" (ngModelChange)="password.set($event)" name="password" autocomplete="current-password" />
+        </div>
+        @if (authError()) {
+          <p class="form-error">{{ authError() }}</p>
+        }
+        <button type="submit" class="btn btn--primary btn--full" [disabled]="authLoading()">
+          @if (authLoading()) { <span class="spinner"></span> Entrando... }
+          @else { Iniciar sesión }
+        </button>
+      </form>
+
+      <a routerLink="/" class="back-link">&#8592; Volver al sitio</a>
+    </div>
+  </div>
+} @else {
+
+  <!-- ADMIN SHELL -->
+  <div class="admin-shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__logo">
+        <img src="/logo-queen-esthetic.jpg" alt="QE" />
+        <span>Admin</span>
+      </div>
+
+      <nav class="sidebar__nav">
+        <button class="nav-item" [class.nav-item--active]="tab() === 'reservas'" (click)="tab.set('reservas')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Reservas
+          @if (bookings().length) { <span class="nav-badge">{{ bookings().length }}</span> }
+        </button>
+        <button class="nav-item" [class.nav-item--active]="tab() === 'servicios'" (click)="tab.set('servicios')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+          Servicios
+        </button>
+        <button class="nav-item" [class.nav-item--active]="tab() === 'galeria'" (click)="tab.set('galeria')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Galería
+          @if (gallery().length) { <span class="nav-badge">{{ gallery().length }}</span> }
+        </button>
+        <button class="nav-item" [class.nav-item--active]="tab() === 'testimonios'" (click)="tab.set('testimonios')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Testimonios
+        </button>
+      </nav>
+
+      <button class="sidebar__logout" (click)="logout()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Cerrar sesión
+      </button>
+    </aside>
+
+    <!-- Content -->
+    <main class="admin-content">
+
+      <!-- ════ RESERVAS ════ -->
+      @if (tab() === 'reservas') {
+        <div class="content-header">
+          <h2 class="content-title">Reservas</h2>
+          <div class="filter-tabs">
+            @for (s of statuses; track s) {
+              <button class="filter-tab" [class.filter-tab--active]="bookingFilter() === s" (click)="bookingFilter.set(s)">
+                {{ s === 'all' ? 'Todas' : statusLabels[s] }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          @if (filteredBookings().length === 0) {
+            <div class="empty-state">No hay reservas {{ bookingFilter() !== 'all' ? 'con este estado' : '' }}.</div>
+          } @else {
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th><th>Cliente</th><th>Servicio</th><th>Preferencia</th><th>Estado</th><th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (b of filteredBookings(); track b.id) {
+                  <tr>
+                    <td>
+                      <span class="td-date">{{ formatDate(b.preferred_date) }}</span>
+                      @if (b.preferred_time) { <span class="td-time">{{ b.preferred_time }}</span> }
+                    </td>
+                    <td>
+                      <span class="td-name">{{ b.client_name }}</span>
+                      <a [href]="'tel:' + b.client_phone" class="td-phone">{{ b.client_phone }}</a>
+                    </td>
+                    <td>{{ b.service_name }}</td>
+                    <td>
+                      @if (b.notes) { <span class="td-note">{{ b.notes }}</span> }
+                      @else { <span class="td-none">—</span> }
+                    </td>
+                    <td>
+                      <span class="badge" [class]="statusClass(b.status)">{{ statusLabels[b.status] }}</span>
+                    </td>
+                    <td class="td-actions">
+                      <select class="status-select" [ngModel]="b.status" (ngModelChange)="updateBookingStatus(b.id, $event)" [name]="'status-' + b.id">
+                        <option value="pending">Pendiente</option>
+                        <option value="confirmed">Confirmada</option>
+                        <option value="completed">Completada</option>
+                        <option value="cancelled">Cancelada</option>
+                      </select>
+                      <a [href]="'https://wa.me/57' + b.client_phone" target="_blank" class="icon-btn icon-btn--green" title="WhatsApp">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                      </a>
+                      <button class="icon-btn icon-btn--red" (click)="deleteBooking(b.id)" title="Eliminar">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      }
+
+      <!-- ════ SERVICIOS ════ -->
+      @if (tab() === 'servicios') {
+        <div class="content-header">
+          <h2 class="content-title">Servicios</h2>
+        </div>
+
+        <!-- Add form -->
+        <div class="card form-card">
+          <h3 class="card-title">Agregar servicio</h3>
+          <div class="form-grid">
+            <div class="form-group span-2">
+              <label class="form-label">Nombre *</label>
+              <input type="text" class="form-input" placeholder="Ej: Manicure Premium"
+                [ngModel]="newService().name" (ngModelChange)="newService.update(s => ({...s, name: $event}))" name="svc-name" />
+            </div>
+            <div class="form-group span-2">
+              <label class="form-label">Descripción</label>
+              <input type="text" class="form-input" placeholder="Descripción breve"
+                [ngModel]="newService().description" (ngModelChange)="newService.update(s => ({...s, description: $event}))" name="svc-desc" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Precio mínimo (COP)</label>
+              <input type="number" class="form-input"
+                [ngModel]="newService().price_min" (ngModelChange)="newService.update(s => ({...s, price_min: $event}))" name="svc-pmin" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Precio máximo (COP)</label>
+              <input type="number" class="form-input"
+                [ngModel]="newService().price_max" (ngModelChange)="newService.update(s => ({...s, price_max: $event}))" name="svc-pmax" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Duración (min)</label>
+              <input type="number" class="form-input"
+                [ngModel]="newService().duration_minutes" (ngModelChange)="newService.update(s => ({...s, duration_minutes: $event}))" name="svc-dur" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Categoría</label>
+              <select class="form-input" [ngModel]="newService().category" (ngModelChange)="newService.update(s => ({...s, category: $event}))" name="svc-cat">
+                @for (c of categories; track c) { <option [value]="c">{{ c }}</option> }
+              </select>
+            </div>
+            <div class="form-group check-group">
+              <label class="check-label">
+                <input type="checkbox" [ngModel]="newService().is_featured" (ngModelChange)="newService.update(s => ({...s, is_featured: $event}))" name="svc-feat" />
+                Destacado
+              </label>
+              <label class="check-label">
+                <input type="checkbox" [ngModel]="newService().is_active" (ngModelChange)="newService.update(s => ({...s, is_active: $event}))" name="svc-active" />
+                Activo
+              </label>
+            </div>
+          </div>
+          <button class="btn btn--primary" (click)="addService()">Agregar servicio</button>
+        </div>
+
+        <!-- Services table -->
+        <div class="table-wrap">
+          @if (services().length === 0) {
+            <div class="empty-state">No hay servicios.</div>
+          } @else {
+            <table class="data-table">
+              <thead><tr><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Destacado</th><th>Activo</th><th></th></tr></thead>
+              <tbody>
+                @for (s of services(); track s.id) {
+                  <tr>
+                    <td><strong>{{ s.name }}</strong><br><span class="td-note">{{ s.description }}</span></td>
+                    <td>{{ s.category }}</td>
+                    <td>{{ s.price_min | number }} – {{ s.price_max | number }}</td>
+                    <td>
+                      <input type="checkbox" [ngModel]="s.is_featured" (ngModelChange)="toggleServiceField(s.id, 'is_featured', $event)" [name]="'feat-' + s.id" />
+                    </td>
+                    <td>
+                      <input type="checkbox" [ngModel]="s.is_active" (ngModelChange)="toggleServiceField(s.id, 'is_active', $event)" [name]="'act-' + s.id" />
+                    </td>
+                    <td>
+                      <button class="icon-btn icon-btn--red" (click)="deleteService(s.id)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      }
+
+      <!-- ════ GALERÍA ════ -->
+      @if (tab() === 'galeria') {
+        <div class="content-header">
+          <h2 class="content-title">Galería</h2>
+        </div>
+
+        <div class="upload-zone">
+          <label class="upload-label" [class.upload-label--loading]="uploading()">
+            <input type="file" accept="image/*" multiple (change)="uploadPhoto($event)" [disabled]="uploading()" style="display:none" />
+            @if (uploading()) {
+              <span class="spinner"></span>
+              <span>Subiendo fotos...</span>
+            } @else {
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--rose)" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span class="upload-text">Haz clic o arrastra fotos aquí</span>
+              <span class="upload-hint">JPG, PNG, WEBP — múltiples archivos</span>
+            }
+          </label>
+          @if (uploadError()) { <p class="form-error">{{ uploadError() }}</p> }
+        </div>
+
+        <div class="gallery-admin-grid">
+          @for (item of gallery(); track item.id) {
+            <div class="gallery-admin-item">
+              <img [src]="item.image_url" [alt]="item.alt_text ?? ''" loading="lazy" />
+              <div class="gallery-admin-item__overlay">
+                <label class="check-label check-label--white">
+                  <input type="checkbox" [ngModel]="item.is_featured" (ngModelChange)="toggleGalleryFeatured(item.id, $event)" [name]="'gfeat-' + item.id" />
+                  Destacada
+                </label>
+                <button class="icon-btn icon-btn--red" (click)="deleteGalleryItem(item.id, item.image_url)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+              </div>
+            </div>
+          }
+          @if (gallery().length === 0) {
+            <div class="empty-state">No hay fotos. Sube la primera.</div>
+          }
+        </div>
+      }
+
+      <!-- ════ TESTIMONIOS ════ -->
+      @if (tab() === 'testimonios') {
+        <div class="content-header">
+          <h2 class="content-title">Testimonios</h2>
+        </div>
+
+        <div class="card form-card">
+          <h3 class="card-title">Agregar testimonio</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Nombre cliente *</label>
+              <input type="text" class="form-input" placeholder="Ana García"
+                [ngModel]="newTestimonial().client_name" (ngModelChange)="newTestimonial.update(t => ({...t, client_name: $event}))" name="t-name" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Calificación</label>
+              <select class="form-input" [ngModel]="newTestimonial().rating" (ngModelChange)="newTestimonial.update(t => ({...t, rating: +$event}))" name="t-rating">
+                <option value="5">★★★★★ (5)</option>
+                <option value="4">★★★★ (4)</option>
+                <option value="3">★★★ (3)</option>
+              </select>
+            </div>
+            <div class="form-group span-2">
+              <label class="form-label">Comentario</label>
+              <textarea class="form-input" rows="3" placeholder="¿Qué dijo la clienta?"
+                [ngModel]="newTestimonial().comment" (ngModelChange)="newTestimonial.update(t => ({...t, comment: $event}))" name="t-comment"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Servicio recibido</label>
+              <input type="text" class="form-input" placeholder="Tinte & Color"
+                [ngModel]="newTestimonial().service_name" (ngModelChange)="newTestimonial.update(t => ({...t, service_name: $event}))" name="t-service" />
+            </div>
+          </div>
+          <button class="btn btn--primary" (click)="addTestimonial()">Agregar</button>
+        </div>
+
+        <div class="table-wrap">
+          @for (t of testimonials(); track t.id) {
+            <div class="testimonial-row">
+              <div class="testimonial-row__stars">
+                @for (s of [1,2,3,4,5]; track s) {
+                  <span [class]="s <= t.rating ? 'star-filled' : 'star-empty'">★</span>
+                }
+              </div>
+              <div class="testimonial-row__body">
+                <p class="testimonial-row__name">{{ t.client_name }} <span class="td-note">{{ t.service_name }}</span></p>
+                <p class="testimonial-row__comment">{{ t.comment }}</p>
+              </div>
+              <div class="testimonial-row__actions">
+                <label class="check-label">
+                  <input type="checkbox" [ngModel]="t.is_visible" (ngModelChange)="toggleTestimonialVisible(t.id, $event)" [name]="'tv-' + t.id" />
+                  Visible
+                </label>
+                <button class="icon-btn icon-btn--red" (click)="deleteTestimonial(t.id)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                </button>
+              </div>
+            </div>
+          }
+          @if (testimonials().length === 0) {
+            <div class="empty-state">No hay testimonios.</div>
+          }
+        </div>
+      }
+
+    </main>
+  </div>
+}

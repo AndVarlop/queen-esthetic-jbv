@@ -1,11 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>QueenEstheticJbv</title>
+  <title>Queen Esthetic JBV — Salón Premium en Barranquilla</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <meta name="description" content="Salón de belleza premium en Barranquilla. Servicios de cabello, uñas, cejas, pestañas y más. Donde la reina eres tú.">
+  <meta property="og:title" content="Queen Esthetic JBV">
+  <meta property="og:description" content="Salón premium en Barranquilla. Donde la reina eres tú.">
+  <meta property="og:image" content="https://queen-esthetic-jbv.devandvar.com/logo-queen-esthetic.jpg">
+  <meta property="og:url" content="https://queen-esthetic-jbv.devandvar.com">
+  <link rel="icon" type="image/jpeg" href="logo-queen-esthetic.jpg">
+  <script>
+    (function () {
+      var q = window.location.search;
+      if (q && q.slice(0, 3) === '?p=') {
+        var params = q.slice(1).split('&').reduce(function (o, s) {
+          var kv = s.split('='); o[kv[0]] = decodeURIComponent(kv[1] || ''); return o;
+        }, {});
+        window.history.replaceState(null, null,
+          '/' + params['p'] + (params['q'] ? '?' + params['q'] : '') + window.location.hash
+        );
+      }
+    }());
+  </script>
 </head>
 <body>
   <app-root></app-root>

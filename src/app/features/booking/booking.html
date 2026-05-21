@@ -1,0 +1,257 @@
+<app-navbar />
+
+<header class="page-hero">
+  <div class="page-hero__orb" aria-hidden="true"></div>
+  <div class="page-hero__content">
+    <span class="eyebrow">Reservas</span>
+    <h1 class="page-hero__title">Agenda tu<br><em>Cita</em></h1>
+    <p class="page-hero__sub">Completa los pasos y confirma tu reserva por WhatsApp.</p>
+  </div>
+</header>
+
+<main class="booking-main">
+  <div class="booking-main__container">
+
+    <!-- Stepper -->
+    @if (step() !== 'confirm') {
+      <div class="stepper" aria-label="Pasos del proceso de reserva">
+        @for (label of ['Servicio', 'Fecha & Hora', 'Tus datos']; track $index) {
+          <div class="stepper__item" [class.stepper__item--done]="stepIndex() > $index" [class.stepper__item--active]="stepIndex() === $index">
+            <span class="stepper__num">{{ stepIndex() > $index ? '✓' : ($index + 1) }}</span>
+            <span class="stepper__label">{{ label }}</span>
+          </div>
+          @if ($index < 2) { <div class="stepper__line" [class.stepper__line--done]="stepIndex() > $index"></div> }
+        }
+      </div>
+    }
+
+    <!-- STEP 1: Service -->
+    @if (step() === 'service') {
+      <div class="step-panel">
+        <h2 class="step-title">¿Qué servicio deseas?</h2>
+        <div class="service-list">
+          @for (name of serviceNames(); track name) {
+            <button
+              class="service-option"
+              [class.service-option--selected]="selected().serviceName === name"
+              (click)="update('serviceName', name)"
+            >
+              <span class="service-option__dot"></span>
+              <span class="service-option__name">{{ name }}</span>
+              @if (selected().serviceName === name) {
+                <span class="service-option__check" aria-hidden="true">✓</span>
+              }
+            </button>
+          }
+        </div>
+        <div class="step-footer">
+          <button class="btn btn--primary" [disabled]="!canNextService()" (click)="next()">
+            Continuar
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- STEP 2: Date & Time -->
+    @if (step() === 'datetime') {
+      <div class="step-panel">
+        <h2 class="step-title">Elige fecha y horario</h2>
+
+        <div class="form-group">
+          <label class="form-label" for="bk-date">Fecha *</label>
+          <input
+            id="bk-date"
+            type="date"
+            class="form-input"
+            [min]="today"
+            [ngModel]="selected().date"
+            (ngModelChange)="update('date', $event)"
+            name="bk-date"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Horario preferido *</label>
+          <div class="time-grid">
+            @for (slot of timeSlots; track slot) {
+              <button
+                class="time-btn"
+                [class.time-btn--selected]="selected().time === slot"
+                (click)="update('time', slot)"
+              >{{ slot }}</button>
+            }
+          </div>
+        </div>
+
+        <div class="step-footer">
+          <button class="btn btn--ghost" (click)="back()">Atrás</button>
+          <button class="btn btn--primary" [disabled]="!canNextDatetime()" (click)="next()">
+            Continuar
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- STEP 3: Info -->
+    @if (step() === 'info') {
+      <div class="step-panel">
+        <h2 class="step-title">Tus datos de contacto</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="bk-name">Nombre completo *</label>
+            <input id="bk-name" type="text" class="form-input"
+              placeholder="Tu nombre"
+              [ngModel]="selected().name"
+              (ngModelChange)="update('name', $event)"
+              name="bk-name" autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="bk-phone">WhatsApp / Teléfono *</label>
+            <input id="bk-phone" type="tel" class="form-input"
+              placeholder="300 000 0000"
+              [ngModel]="selected().phone"
+              (ngModelChange)="update('phone', $event)"
+              name="bk-phone" autocomplete="tel" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="bk-email">Email <span class="form-opt">(opcional)</span></label>
+          <input id="bk-email" type="email" class="form-input"
+            placeholder="tu&#64;correo.com"
+            [ngModel]="selected().email"
+            (ngModelChange)="update('email', $event)"
+            name="bk-email" autocomplete="email" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="bk-notes">Nota adicional <span class="form-opt">(opcional)</span></label>
+          <textarea id="bk-notes" class="form-input form-textarea"
+            rows="3"
+            placeholder="Ej: alergia a algún producto, preferencia de estilista..."
+            [ngModel]="selected().notes"
+            (ngModelChange)="update('notes', $event)"
+            name="bk-notes"></textarea>
+        </div>
+
+        <!-- Summary -->
+        <div class="booking-summary">
+          <div class="summary-row">
+            <span class="summary-label">Servicio</span>
+            <span class="summary-value">{{ selected().serviceName }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Fecha</span>
+            <span class="summary-value">{{ selected().date }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Hora</span>
+            <span class="summary-value">{{ selected().time }}</span>
+          </div>
+        </div>
+
+        <div class="step-footer">
+          <button class="btn btn--ghost" (click)="back()">Atrás</button>
+          <button class="btn btn--primary" [disabled]="!canNextInfo() || loading()" (click)="confirm()">
+            @if (loading()) {
+              <span class="btn-spinner" aria-hidden="true"></span>
+              Guardando...
+            } @else {
+              Confirmar Reserva ✓
+            }
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- STEP 4: Confirm -->
+    @if (step() === 'confirm') {
+      <div class="confirm-panel">
+        <div class="confirm-icon" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+
+        <h2 class="confirm-title">¡Reserva recibida!</h2>
+        <p class="confirm-sub">Tu solicitud fue guardada. Confirma por WhatsApp para asegurar tu cita.</p>
+
+        <div class="confirm-summary">
+          <div class="summary-row">
+            <span class="summary-label">Servicio</span>
+            <span class="summary-value">{{ selected().serviceName }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Fecha</span>
+            <span class="summary-value">{{ selected().date }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Hora</span>
+            <span class="summary-value">{{ selected().time }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Nombre</span>
+            <span class="summary-value">{{ selected().name }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Teléfono</span>
+            <span class="summary-value">{{ selected().phone }}</span>
+          </div>
+        </div>
+
+        <a [href]="buildWhatsApp()" target="_blank" rel="noopener" class="btn btn--whatsapp">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+          </svg>
+          Confirmar por WhatsApp
+        </a>
+
+        <p class="confirm-note">También puedes llamarnos al <a [href]="'tel:' + phone">{{ phone }}</a></p>
+      </div>
+    }
+
+  </div>
+</main>
+
+<!-- Info bar -->
+<section class="info-bar">
+  <div class="info-bar__inner">
+    <div class="info-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rose)" stroke-width="1.5">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+        <circle cx="12" cy="9" r="2.5"/>
+      </svg>
+      <div>
+        <p class="info-label">Ubicación</p>
+        <p class="info-value">Barranquilla, Colombia</p>
+      </div>
+    </div>
+    <div class="info-sep"></div>
+    <div class="info-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rose)" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+      </svg>
+      <div>
+        <p class="info-label">Horario</p>
+        <p class="info-value">Lun – Sáb: 8am – 7pm</p>
+      </div>
+    </div>
+    <div class="info-sep"></div>
+    <div class="info-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rose)" stroke-width="1.5">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.49 11a19.79 19.79 0 01-3.07-8.67A2 2 0 013.4 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/>
+      </svg>
+      <div>
+        <p class="info-label">Teléfono</p>
+        <p class="info-value">350 413 2509</p>
+      </div>
+    </div>
+  </div>
+</section>

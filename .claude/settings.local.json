@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude --version)",
+      "PowerShell(claude *)",
+      "WebFetch(domain:centrodeesteticadepeluqueriaqueen.site.agendapro.com)",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}

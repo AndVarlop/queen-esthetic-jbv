@@ -1,0 +1,118 @@
+<app-navbar />
+
+<!-- Page header -->
+<header class="page-hero">
+  <div class="page-hero__orb" aria-hidden="true"></div>
+  <div class="page-hero__content">
+    <span class="eyebrow">Galería</span>
+    <h1 class="page-hero__title">Nuestro Trabajo<br><em>Habla por Sí Solo</em></h1>
+    <p class="page-hero__sub">Transformaciones reales de nuestras clientas en Barranquilla.</p>
+  </div>
+</header>
+
+<!-- Category filter -->
+@if (items().length > 0) {
+<div class="filter-bar">
+  <div class="filter-bar__inner">
+    @for (cat of categories(); track cat) {
+    <button class="filter-btn" [class.filter-btn--active]="activeCategory() === cat" (click)="activeCategory.set(cat)">
+      {{ categoryLabel(cat) }}
+    </button>
+    }
+  </div>
+</div>
+}
+
+<!-- Gallery grid -->
+<section class="gallery-page">
+  <div class="gallery-page__container">
+
+    @if (items().length === 0) {
+    <!-- Empty state -->
+    <div class="gallery-empty">
+      <div class="gallery-empty__icon" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(201,169,110,0.4)" stroke-width="1.2">
+          <rect x="3" y="3" width="18" height="18" rx="3" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <path d="M21 15l-5-5L5 21" />
+        </svg>
+      </div>
+      <p class="gallery-empty__title">Galería en construcción</p>
+      <p class="gallery-empty__sub">Pronto compartiremos nuestras transformaciones. Mientras tanto, visítanos en
+        Instagram.</p>
+      <a href="https://www.instagram.com/queenestheticjbv/" target="_blank" rel="noopener"
+        class="btn btn--outline-gold">
+        Ver en Instagram
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          aria-hidden="true">
+          <path d="M7 17L17 7M7 7h10v10" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- Placeholder grid while empty -->
+    <div class="gallery-grid gallery-grid--placeholders">
+      @for (p of placeholders; track $index) {
+      <div class="gallery-item gallery-item--placeholder">
+        <div class="gallery-item__inner">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(201,169,110,0.2)" stroke-width="1.5"
+            aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="M21 15l-5-5L5 21" />
+          </svg>
+        </div>
+      </div>
+      }
+    </div>
+
+    } @else {
+    <div class="gallery-grid">
+      @for (item of filtered(); track item.id) {
+      <button class="gallery-item" (click)="openLightbox(item)" [attr.aria-label]="item.alt_text ?? 'Ver foto'">
+        <img [src]="item.image_url" [alt]="item.alt_text ?? 'Queen Esthetic JBV'" loading="lazy" decoding="async" />
+        <div class="gallery-item__overlay" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg>
+          @if (item.category) {
+          <span class="gallery-item__cat">{{ categoryLabel(item.category) }}</span>
+          }
+        </div>
+      </button>
+      }
+    </div>
+    }
+
+  </div>
+</section>
+
+<!-- Lightbox -->
+@if (lightboxItem()) {
+<div class="lightbox" (click)="closeLightbox()" role="dialog" aria-modal="true">
+  <button class="lightbox__close" (click)="closeLightbox()" aria-label="Cerrar">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M18 6L6 18M6 6l12 12" />
+    </svg>
+  </button>
+  <div class="lightbox__content" (click)="$event.stopPropagation()">
+    <img [src]="lightboxItem()!.image_url" [alt]="lightboxItem()!.alt_text ?? 'Queen Esthetic JBV'" />
+    @if (lightboxItem()!.alt_text) {
+    <p class="lightbox__caption">{{ lightboxItem()!.alt_text }}</p>
+    }
+  </div>
+</div>
+}
+
+<!-- CTA -->
+<section class="page-cta">
+  <p class="page-cta__text">¿Te gustó lo que ves?</p>
+  <h2 class="page-cta__title">Agenda tu cita hoy</h2>
+  <a [href]="agendaproUrl" target="_blank" rel="noopener" class="btn btn--primary">
+    Reservar ahora
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      aria-hidden="true">
+      <path d="M5 12h14M12 5l7 7-7 7" />
+    </svg>
+  </a>
+</section>
