@@ -58,6 +58,29 @@ export class Admin {
   readonly statuses: (BookingStatus | 'all')[] = ['all', 'pending', 'confirmed', 'completed', 'cancelled'];
   readonly categories = CATEGORIES;
 
+  /* ── Modal ── */
+  modal = signal<{
+    icon: string;
+    title: string;
+    message: string;
+    confirmLabel: string;
+    type: 'danger' | 'warning';
+    onConfirm: () => Promise<void>;
+  } | null>(null);
+
+  private ask(icon: string, title: string, message: string, confirmLabel: string, type: 'danger' | 'warning', onConfirm: () => Promise<void>): void {
+    this.modal.set({ icon, title, message, confirmLabel, type, onConfirm });
+  }
+
+  closeModal(): void { this.modal.set(null); }
+
+  async confirmModal(): Promise<void> {
+    const m = this.modal();
+    if (!m) return;
+    this.modal.set(null);
+    await m.onConfirm();
+  }
+
   constructor() {
     afterNextRender(async () => {
       const { data: { session } } = await this.sb.client.auth.getSession();
@@ -101,19 +124,29 @@ export class Admin {
 
   async cancelToday(): Promise<void> {
     const today = new Date().toISOString().split('T')[0];
-    if (!confirm(`¿Cancelar TODAS las reservas de hoy (${today})? Esta acción no se puede deshacer.`)) return;
-    const { error } = await this.sb.client
-      .from('bookings')
-      .update({ status: 'cancelled' } as never)
-      .eq('preferred_date', today)
-      .neq('status', 'cancelled');
-    if (!error) await this.loadBookings();
+    this.ask(
+      '🚫', 'Día lleno — cancelar hoy',
+      `Se cancelarán TODAS las reservas pendientes del ${today}. Esta acción no se puede deshacer.`,
+      'Sí, cancelar todo', 'warning',
+      async () => {
+        const { error } = await this.sb.client
+          .from('bookings').update({ status: 'cancelled' } as never)
+          .eq('preferred_date', today).neq('status', 'cancelled');
+        if (!error) await this.loadBookings();
+      }
+    );
   }
 
   async deleteBooking(id: string): Promise<void> {
-    if (!confirm('¿Eliminar reserva?')) return;
-    await this.sb.client.from('bookings').delete().eq('id', id);
-    this.bookings.update(list => list.filter(b => b.id !== id));
+    this.ask(
+      '🗑', 'Eliminar reserva',
+      '¿Estás segura? La reserva se eliminará permanentemente.',
+      'Eliminar', 'danger',
+      async () => {
+        await this.sb.client.from('bookings').delete().eq('id', id);
+        this.bookings.update(list => list.filter(b => b.id !== id));
+      }
+    );
   }
 
   statusClass(s: BookingStatus): string {
@@ -145,9 +178,15 @@ export class Admin {
   }
 
   async deleteService(id: string): Promise<void> {
-    if (!confirm('¿Eliminar servicio?')) return;
-    await this.sb.client.from('services').delete().eq('id', id);
-    this.services.update(list => list.filter(s => s.id !== id));
+    this.ask(
+      '🗑', 'Eliminar servicio',
+      'El servicio se eliminará permanentemente y dejará de aparecer en la página.',
+      'Eliminar', 'danger',
+      async () => {
+        await this.sb.client.from('services').delete().eq('id', id);
+        this.services.update(list => list.filter(s => s.id !== id));
+      }
+    );
   }
 
   /* ── Gallery ── */
@@ -184,11 +223,17 @@ export class Admin {
   }
 
   async deleteGalleryItem(id: string, imagePath: string): Promise<void> {
-    if (!confirm('¿Eliminar foto?')) return;
-    const path = imagePath.split('/gallery/').pop();
-    if (path) await this.sb.client.storage.from('gallery').remove([path]);
-    await this.sb.client.from('gallery').delete().eq('id', id);
-    this.gallery.update(list => list.filter(g => g.id !== id));
+    this.ask(
+      '🖼', 'Eliminar foto',
+      'La foto se eliminará del storage y de la galería permanentemente.',
+      'Eliminar', 'danger',
+      async () => {
+        const path = imagePath.split('/gallery/').pop();
+        if (path) await this.sb.client.storage.from('gallery').remove([path]);
+        await this.sb.client.from('gallery').delete().eq('id', id);
+        this.gallery.update(list => list.filter(g => g.id !== id));
+      }
+    );
   }
 
   /* ── Testimonials ── */
@@ -214,9 +259,15 @@ export class Admin {
   }
 
   async deleteTestimonial(id: string): Promise<void> {
-    if (!confirm('¿Eliminar testimonio?')) return;
-    await this.sb.client.from('testimonials').delete().eq('id', id);
-    this.testimonials.update(list => list.filter(t => t.id !== id));
+    this.ask(
+      '💬', 'Eliminar testimonio',
+      'El testimonio se eliminará y dejará de mostrarse en la página.',
+      'Eliminar', 'danger',
+      async () => {
+        await this.sb.client.from('testimonials').delete().eq('id', id);
+        this.testimonials.update(list => list.filter(t => t.id !== id));
+      }
+    );
   }
 
   formatDate(d: string): string {

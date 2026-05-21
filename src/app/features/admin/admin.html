@@ -337,4 +337,29 @@
 
     </main>
   </div>
+
+  <!-- ════ MODAL ════ -->
+  @if (modal()) {
+    <div class="modal-backdrop" (click)="closeModal()" role="dialog" aria-modal="true">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-icon" [class.modal-icon--warning]="modal()!.type === 'warning'">
+          {{ modal()!.icon }}
+        </div>
+        <h3 class="modal-title">{{ modal()!.title }}</h3>
+        <p class="modal-message">{{ modal()!.message }}</p>
+        <div class="modal-actions">
+          <button class="btn btn--ghost" (click)="closeModal()">Cancelar</button>
+          <button
+            class="btn"
+            [class.btn--danger]="modal()!.type === 'danger'"
+            [class.btn--warning]="modal()!.type === 'warning'"
+            (click)="confirmModal()"
+          >
+            {{ modal()!.confirmLabel }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 }
+

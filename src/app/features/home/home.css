@@ -61,7 +61,7 @@
   z-index: 1;
   max-width: 900px;
   width: 100%;
-  padding: 120px 2rem 0;
+  padding: 120px 2rem 3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -214,16 +214,12 @@
 
 /* Scroll */
 .hero-scroll {
-  position: absolute;
-  bottom: 2.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
   opacity: 0;
+  margin-top: 0.5rem;
 }
 
 .hero-scroll__label { font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-30); }
@@ -656,7 +652,7 @@
    RESPONSIVE
 ══════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  .hero-content { gap: 1.625rem; padding-top: 110px; }
+  .hero-content { gap: 1.625rem; padding-top: 110px; padding-bottom: 2rem; }
   .hero-actions { flex-direction: column; align-items: stretch; width: 100%; max-width: 300px; }
   .btn { justify-content: center; }
   .hero-stats { gap: 1.5rem; }
@@ -674,5 +670,4 @@
 @media (max-width: 480px) {
   .hero-stats { gap: 1rem; }
   .hero-stat__sep { height: 32px; }
-  .hero-scroll { bottom: 1.5rem; }
 }
