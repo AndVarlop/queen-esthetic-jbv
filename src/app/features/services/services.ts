@@ -1,4 +1,5 @@
 import { Component, signal, computed, afterNextRender, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../layout/navbar/navbar';
 import { DataService } from '../../services/data.service';
 import type { Service } from '../../core/database.types';
@@ -26,7 +27,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 @Component({
   selector: 'app-services',
-  imports: [NavbarComponent],
+  imports: [NavbarComponent, RouterLink],
   templateUrl: './services.html',
   styleUrl: './services.css',
 })

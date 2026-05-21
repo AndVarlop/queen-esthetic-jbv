@@ -1,5 +1,6 @@
 import { Component, signal, computed, afterNextRender, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { NavbarComponent } from '../../layout/navbar/navbar';
 import { DataService } from '../../services/data.service';
 import type { Service } from '../../core/database.types';
@@ -117,8 +118,16 @@ export class Booking {
   }
 
   constructor() {
+    const route = inject(ActivatedRoute);
+
     afterNextRender(() => {
       this.data.getAllServices().then(s => this.services.set(s));
+
+      const servicio = route.snapshot.queryParamMap.get('servicio');
+      if (servicio) {
+        this.selected.update(s => ({ ...s, serviceName: servicio }));
+        this.step.set('datetime');
+      }
     });
   }
 }
