@@ -190,4 +190,9 @@
 @media (max-width: 560px) {
   .services-grid, .services-loading { grid-template-columns: 1fr; }
   .cta-strip__content { flex-direction: column; align-items: flex-start; }
+  .filter-bar { padding: 0 1rem 1.25rem; overflow-x: auto; }
+  .filter-bar__inner { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+  .filter-btn { flex-shrink: 0; }
+  .services-page__container { padding-inline: 1rem; }
+  .page-hero { padding: 120px 1rem 3rem; }
 }

@@ -195,4 +195,10 @@
   .navbar__links { display: none; }
   .navbar__burger { display: flex; }
   .navbar__mobile { display: block; }
+  .navbar__logo-text { display: none; }
+  .navbar__inner { padding-inline: 1.25rem; }
+}
+
+@media (max-width: 380px) {
+  .navbar__logo-img { width: 36px; height: 36px; }
 }

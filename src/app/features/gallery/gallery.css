@@ -177,4 +177,10 @@
 .btn--primary:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(201,169,110,0.5); }
 
 @media (max-width: 900px) { .gallery-grid { columns: 2; } }
-@media (max-width: 560px) { .gallery-grid { columns: 1; } }
+@media (max-width: 560px) {
+  .gallery-grid { columns: 1; }
+  .filter-bar__inner { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+  .filter-btn { flex-shrink: 0; }
+  .gallery-page__container { padding-inline: 1rem; }
+  .page-hero { padding: 120px 1rem 3rem; }
+}
