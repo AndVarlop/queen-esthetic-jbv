@@ -77,6 +77,10 @@
       @if (tab() === 'reservas') {
         <div class="content-header">
           <h2 class="content-title">Reservas</h2>
+          <button class="btn btn--full-day" (click)="cancelToday()" title="Cancelar todas las reservas de hoy">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+            Día lleno — cancelar hoy
+          </button>
           <div class="filter-tabs">
             @for (s of statuses; track s) {
               <button class="filter-tab" [class.filter-tab--active]="bookingFilter() === s" (click)="bookingFilter.set(s)">

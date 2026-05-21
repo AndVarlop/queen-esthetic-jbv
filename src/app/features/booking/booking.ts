@@ -6,7 +6,8 @@ import type { Service } from '../../core/database.types';
 
 type Step = 'service' | 'datetime' | 'info' | 'confirm';
 
-const TIME_SLOTS = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM'];
+const ALL_SLOTS = ['8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM'];
+const AFTERNOON_SLOTS = ['2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM'];
 
 const FALLBACK_SERVICES = [
   'Corte & Peinado', 'Tinte & Color', 'Alisado / Keratina',
@@ -32,8 +33,6 @@ export class Booking {
     this.services().length ? this.services().map(s => s.name) : FALLBACK_SERVICES
   );
 
-  readonly timeSlots = TIME_SLOTS;
-
   step = signal<Step>('service');
   loading = signal(false);
   bookingId = signal<string | null>(null);
@@ -48,7 +47,20 @@ export class Booking {
     notes: '',
   });
 
-  today = new Date().toISOString().split('T')[0];
+  /** Minimum selectable date: tomorrow always */
+  get minDate(): string {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split('T')[0];
+  }
+
+  /** Available time slots — if today is selected and it's before 2pm, only show afternoon */
+  get timeSlots(): string[] {
+    const sel = this.selected().date;
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (sel === todayStr && new Date().getHours() < 14) return AFTERNOON_SLOTS;
+    return ALL_SLOTS;
+  }
 
   stepIndex = computed(() => ({ service: 0, datetime: 1, info: 2, confirm: 3 }[this.step()]));
 

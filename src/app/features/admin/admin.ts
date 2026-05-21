@@ -68,11 +68,12 @@ export class Admin {
   async login(): Promise<void> {
     this.authLoading.set(true);
     this.authError.set('');
-    const { error } = await this.sb.client.auth.signInWithPassword({
+    const { data, error } = await this.sb.client.auth.signInWithPassword({
       email: this.email(), password: this.password()
     });
     this.authLoading.set(false);
-    if (error) { this.authError.set('Credenciales incorrectas.'); return; }
+    if (error) { this.authError.set('Credenciales incorrectas: ' + error.message); return; }
+    console.log('logged in as:', data.user?.email);
     this.isAuth.set(true);
     this.loadAll();
   }
@@ -88,13 +89,25 @@ export class Admin {
 
   /* ── Bookings ── */
   private async loadBookings(): Promise<void> {
-    const { data } = await this.sb.client.from('bookings').select('*').order('created_at', { ascending: false });
+    const { data, error } = await this.sb.client.from('bookings').select('*').order('created_at', { ascending: false });
+    if (error) console.error('bookings error:', error.message, error.code);
     this.bookings.set((data as Booking[]) ?? []);
   }
 
   async updateBookingStatus(id: string, status: BookingStatus): Promise<void> {
     await this.sb.client.from('bookings').update({ status } as never).eq('id', id);
     this.bookings.update(list => list.map(b => b.id === id ? { ...b, status } : b));
+  }
+
+  async cancelToday(): Promise<void> {
+    const today = new Date().toISOString().split('T')[0];
+    if (!confirm(`¿Cancelar TODAS las reservas de hoy (${today})? Esta acción no se puede deshacer.`)) return;
+    const { error } = await this.sb.client
+      .from('bookings')
+      .update({ status: 'cancelled' } as never)
+      .eq('preferred_date', today)
+      .neq('status', 'cancelled');
+    if (!error) await this.loadBookings();
   }
 
   async deleteBooking(id: string): Promise<void> {

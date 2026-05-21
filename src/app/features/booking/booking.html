@@ -66,7 +66,7 @@
             id="bk-date"
             type="date"
             class="form-input"
-            [min]="today"
+            [min]="minDate"
             [ngModel]="selected().date"
             (ngModelChange)="update('date', $event)"
             name="bk-date"
